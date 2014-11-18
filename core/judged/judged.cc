@@ -540,10 +540,10 @@ int main(int argc, char** argv) {
 	signal(SIGTERM, call_for_exit);
 	int j = 1;
 	while (1) {			// start to run
+		//从数据库中查询出来的没有判的题目判完
+		//然后一直询问
 		while (j && (http_judge || !init_mysql())) {
-
 			j = work();
-
 		}
 		sleep(sleep_time);
 		j = 1;
