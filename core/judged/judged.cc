@@ -211,6 +211,7 @@ void run_client(int runid, int clientid) {
 	//sprintf(err,"%s/run%d/error.out",oj_home,clientid);
 	//freopen(err,"a+",stderr);
 
+	//运行判题客户端程序
 	if (!DEBUG)
 		execl("/usr/bin/judge_client", "/usr/bin/judge_client", runidstr, buf,
 				oj_home, (char *) NULL);
@@ -404,6 +405,8 @@ int work() {
 		if (DEBUG)
 			write_log("Judging solution %d", runid);
 		if (workcnt >= max_running) {           // if no more client can running
+			//总共有4个判题的进程,等待任何一个退出,可以在配置
+			//文件中设置个数
 			tmp_pid = waitpid(-1, NULL, 0);     // wait 4 one child exit
 			workcnt--;
 			retcnt++;
@@ -412,7 +415,6 @@ int work() {
 					break; // got the client id
 			ID[i] = 0;
 		} else {                                             // have free client
-
 			for (i = 0; i < max_running; i++)     // find the client id
 				if (ID[i] == 0)
 					break;    // got the client id
@@ -423,6 +425,7 @@ int work() {
 			if (ID[i] == 0) {
 				if (DEBUG)
 					write_log("<<=sid=%d===clientid=%d==>>\n", runid, i);
+				//运行判题客户端
 				run_client(runid, i);    // if the process is the son, run it
 				exit(0);
 			}

@@ -67,7 +67,7 @@
 #define OJ_RE 10				//Runtime Error
 #define OJ_CE 11				//Compile Error
 #define OJ_CO 12
-#define OJ_TR 13
+#define OJ_TR 13				//Test Running
 /*copy from ZOJ
  http://code.google.com/p/zoj/source/browse/trunk/judge_client/client/tracer.cc?spec=svn367&r=367#39
  */
@@ -1412,6 +1412,8 @@ void copy_mono_runtime(char * work_dir) {
 
 void run_solution(int & lang, char * work_dir, int & time_lmt, int & usedtime,
 		int & mem_lmt) {
+	//将优先级调成19(最低级)
+	//优先级数为-20到19,数字越小优先级越高
 	nice(19);
 	// now the user is "judger"
 	chdir(work_dir);
@@ -1420,6 +1422,7 @@ void run_solution(int & lang, char * work_dir, int & time_lmt, int & usedtime,
 	freopen("user.out", "w", stdout);
 	freopen("error.out", "a+", stderr);
 	// trace me
+	// 本进程被其父进程所跟踪。
 	ptrace(PTRACE_TRACEME, 0, NULL, NULL);
 	// run me
 	if (lang != 3)
@@ -1437,7 +1440,7 @@ void run_solution(int & lang, char * work_dir, int & time_lmt, int & usedtime,
 	// set the limit
 	struct rlimit LIM; // time limit, file limit& memory limit
 	// time limit
-	if (oi_mode)
+	if (oi_mode)		//oi模式
 		LIM.rlim_cur = time_lmt + 1;
 	else
 		LIM.rlim_cur = (time_lmt - usedtime / 1000) + 1;
@@ -1524,6 +1527,7 @@ void run_solution(int & lang, char * work_dir, int & time_lmt, int & usedtime,
 	//sleep(1);
 	exit(0);
 }
+
 int fix_java_mis_judge(char *work_dir, int & ACflg, int & topmemory,
 		int mem_lmt) {
 	int comp_res = OJ_AC;
@@ -1608,6 +1612,7 @@ int special_judge(char* oj_home, int problem_id, char *infile, char *outfile,
 	return ret;
 
 }
+
 void judge_solution(int & ACflg, int & usedtime, int time_lmt, int isspj,
 		int p_id, char * infile, char * outfile, char * userfile, int & PEflg,
 		int lang, char * work_dir, int & topmemory, int mem_lmt,
@@ -1711,8 +1716,10 @@ void watch_solution(pid_t pidApp, char * infile, int & ACflg, int isspj,
 		}
 		//sig = status >> 8;/*status >> 8 Ã¥Â·Â®Ã¤Â¸ÂÃ¥Â¤Å¡Ã¦ËÂ¯EXITCODE*/
 
+		//如果子进程正常返回,则退出
 		if (WIFEXITED(status))
 			break;
+		//出现了错误RE
 		if ((lang < 4 || lang == 9) && get_file_size("error.out") && !oi_mode) {
 			ACflg = OJ_RE;
 			//addreinfo(solution_id);
@@ -1720,28 +1727,26 @@ void watch_solution(pid_t pidApp, char * infile, int & ACflg, int isspj,
 			break;
 		}
 
-		if (!isspj
-				&& get_file_size(userfile)
-						> get_file_size(outfile) * 2 + 1024) {
+		if (!isspj &&
+				get_file_size(userfile) > get_file_size(outfile) * 2 + 1024) {
 			ACflg = OJ_OL;
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
 			break;
 		}
 
+		//返回子进程的返回状态
+		//前面设置了时钟中断
 		exitcode = WEXITSTATUS(status);
 		/*exitcode == 5 waiting for next CPU allocation          * ruby using system to run,exit 17 ok
 		 *  */
-		if ((lang >= 3 && exitcode == 17) || exitcode == 0x05 || exitcode == 0)
+		if ((lang >= 3 && exitcode == 17) || exitcode == 0x05 || exitcode == 0) {
 			//go on and on
 			;
-		else {
-
+		} else {
 			if (DEBUG) {
 				printf("status>>8=%d\n", exitcode);
-
 			}
 			//psignal(exitcode, NULL);
-
 			if (ACflg == OJ_AC) {
 				switch (exitcode) {
 				case SIGCHLD:
@@ -1760,7 +1765,6 @@ void watch_solution(pid_t pidApp, char * infile, int & ACflg, int isspj,
 				print_runtimeerror(strsignal(exitcode));
 			}
 			ptrace(PTRACE_KILL, pidApp, NULL, NULL);
-
 			break;
 		}
 		if (WIFSIGNALED(status)) {
@@ -1780,7 +1784,7 @@ void watch_solution(pid_t pidApp, char * infile, int & ACflg, int isspj,
 			if (ACflg == OJ_AC) {
 				switch (sig) {
 				case SIGCHLD:
-				case SIGALRM:
+				case SIGALRM:	//前面设置了足够长时间的时钟中断,被时钟中断终止说明超时了
 					alarm(0);
 				case SIGKILL:
 				case SIGXCPU:
@@ -2078,7 +2082,7 @@ int main(int argc, char** argv) {
 
 	//编译源文件
 	Compile_OK = compile(lang);
-	//编译不成功,将CE信息更新回数据库
+	//编译不成功,将信息更新回数据库
 	if (Compile_OK != 0) {
 		addceinfo(solution_id);
 		update_solution(solution_id, OJ_CE, 0, 0, 0, 0, 0.0);
@@ -2109,6 +2113,7 @@ int main(int argc, char** argv) {
 	// using http to get remote test data files
 	if (p_id > 0 && http_judge)
 		get_test_file(work_dir, p_id);
+	//打开存放测试数据的目录,如果失败,则返回
 	if (p_id > 0 && (dp = opendir(fullpath)) == NULL) {
 
 		write_log("No such dir:%s!\n", fullpath);
@@ -2147,15 +2152,17 @@ int main(int argc, char** argv) {
 	double pass_rate = 0.0;
 	int num_of_test = 0;
 	int finalACflg = ACflg;
+	//这个功能是在提交页面的最下边有一个test按钮
 	if (p_id == 0) {  //custom input running
 		printf("running a custom input...\n");
 		get_custominput(solution_id, work_dir);
 		init_syscalls_limits(lang);
 		pid_t pidApp = fork();
 
-		if (pidApp == 0) {
+		if (pidApp == 0) {	//在子进程中
+			//运行编译后的程序,生成用户产生的结果user.out文件
 			run_solution(lang, work_dir, time_lmt, usedtime, mem_lmt);
-		} else {
+		} else {		//父进程中
 			watch_solution(pidApp, infile, ACflg, isspj, userfile, outfile,
 					solution_id, lang, topmemory, mem_lmt, usedtime, time_lmt,
 					p_id, PEflg, work_dir);
@@ -2172,7 +2179,6 @@ int main(int argc, char** argv) {
 			addcustomout(solution_id);
 		}
 		update_solution(solution_id, OJ_TR, usedtime, topmemory >> 10, 0, 0, 0);
-
 		exit(0);
 	}
 

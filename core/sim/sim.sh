@@ -1,4 +1,5 @@
 #!/bin/bash
+#获取扩展名
 EXTENSION=`echo "$1" | cut -d'.' -f2`
 for i in ../data/$2/ac/*.$EXTENSION
 do 
@@ -7,7 +8,7 @@ do
 	then 
 		sim_s_id=`basename $i`
 		echo "$sim $sim_s_id" >sim
-		exit $sim 
+		exit $sim
 	fi
 done
 exit 0;
