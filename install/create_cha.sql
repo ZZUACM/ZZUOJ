@@ -7,3 +7,4 @@ CREATE TABLE  `cha` (
   PRIMARY KEY (`problem_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+insert into cha(problem_id) select problem_id from problem;
