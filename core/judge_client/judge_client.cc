@@ -1882,14 +1882,17 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 		execute_cmd("/bin/cp %s ../data/%d/ac/%d.%s", src_pth, pid, solution_id,
 				lang_ext[lang]);
 		//c cpp will
-		if (lang == 0)
+		//c和cpp互相查重
+		if (lang == 0) {
 			execute_cmd("/bin/ln ../data/%d/ac/%d.%s ../data/%d/ac/%d.%s", pid,
 					solution_id, lang_ext[lang], pid, solution_id,
 					lang_ext[lang + 1]);
-		if (lang == 1)
+		}
+		if (lang == 1) {
 			execute_cmd("/bin/ln ../data/%d/ac/%d.%s ../data/%d/ac/%d.%s", pid,
 					solution_id, lang_ext[lang], pid, solution_id,
 					lang_ext[lang - 1]);
+		}
 
 	} else {
 
@@ -2182,6 +2185,7 @@ int main(int argc, char** argv) {
 		exit(0);
 	}
 
+	//这里貌似表示hustoj也支持和CF一样的单组测试
 	for (; (oi_mode || ACflg == OJ_AC) && (dirp = readdir(dp)) != NULL;) {
 
 		namelen = isInFile(dirp->d_name); // check if the file is *.in or not
@@ -2195,9 +2199,8 @@ int main(int argc, char** argv) {
 		pid_t pidApp = fork();
 
 		if (pidApp == 0) {
-
 			run_solution(lang, work_dir, time_lmt, usedtime, mem_lmt);
-		} else {
+		} else {		//父进程等待子进程判题结束,获取结果
 
 			num_of_test++;
 
