@@ -383,7 +383,7 @@ int compare_zoj(const char *file1, const char *file2) {
 	f2 = fopen(file2, "r");
 	if (!f1 || !f2) {
 		ret = OJ_RE;
-	} else
+	} else {
 		for (;;) {
 			// Find the first non-space character at the beginning of line.
 			// Blank lines are skipped.
@@ -422,6 +422,7 @@ int compare_zoj(const char *file1, const char *file2) {
 				}
 			}
 		}
+	}
 	end: if (ret == OJ_WA)
 		make_diff_out(f1, f2, c1, c2, file1);
 	if (f1)
