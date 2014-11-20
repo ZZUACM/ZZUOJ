@@ -1877,6 +1877,7 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 	sprintf(src_pth, "Main.%s", lang_ext[lang]);
 
 	int sim = execute_cmd("/usr/bin/sim.sh %s %d", src_pth, pid);
+	//在子进程中，将AC的代码复制到相应的目录下，准备判重
 	if (!sim) {
 		execute_cmd("/bin/mkdir ../data/%d/ac/", pid);
 
