@@ -1901,7 +1901,16 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 		FILE * pf;
 		pf = fopen("sim", "r");
 		if (pf) {
-			fscanf(pf, "%d%d", &sim, &sim_s_id);
+			//从sim文件中读取相似的运行号
+			//这里将重复的运行号都插入数据库
+			//因为后边还会进行一次插入，可能会产生一个
+			//数据库错误，因为插入了主键相同的元素。
+			while (fscanf(pf, "%d%d", &sim, &sim_s_id) != EOF) {
+				if (sim_s_id > sim_s_id) {
+					update_solution(solution_id, OJ_RI,
+							0, 0, sim, sim_s_id, 0.0);
+				}
+			}
 			fclose(pf);
 		}
 
