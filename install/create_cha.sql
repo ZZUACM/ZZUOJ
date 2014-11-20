@@ -1,2 +1,9 @@
+set names utf8; 
 use jol;
-alter table contest_problem add column ischa BOOL default false;
+
+CREATE TABLE  `cha` (
+  `problem_id` int(11) NOT NULL DEFAULT '0',
+  `ischa` bool NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`problem_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
