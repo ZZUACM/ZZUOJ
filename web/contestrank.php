@@ -67,7 +67,7 @@
 	$sql="SELECT `start_time`,`title`,`end_time` FROM `contest` WHERE `contest_id`='$cid'";
 	//$result=mysql_query($sql) or die(mysql_error());
 	//$rows_cnt=mysql_num_rows($result);
-	if($OJ_MEMCACHE) {
+	if($OJ_MEMCACHE) {	//false
 		require("./include/memcache.php");
 		$result = mysql_query_cache($sql);
 		//or die("Error! ".mysql_error());
@@ -77,7 +77,6 @@
 			$rows_cnt=0;
 		}
 	} else {
-
 		$result = mysql_query($sql);
 		//or die("Error! ".mysql_error());
 		if($result) {
@@ -149,7 +148,7 @@
 	}
 
 	//$row=mysql_fetch_array($result);
-	$pid_cnt = intval($row['pbc']);
+	$pid_cnt = intval($row['pbc']);		//题数
 	if(!$OJ_MEMCACHE) {
 		mysql_free_result($result);
 	}
