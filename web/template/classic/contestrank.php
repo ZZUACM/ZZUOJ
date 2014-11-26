@@ -13,10 +13,16 @@
 	$rank=1;
 ?>
 <center><h3>Contest RankList -- <?php echo $title?></h3><a href="contestrank.xls.php?cid=<?php echo $cid?>" >Download</a></center>
-<table id=rank><tr class=toprow align=center><td width=5%>Rank<td width=10%>User<td width=10%>Nick<td width=5%>Solved<td width=5%>Penalty
+<table id=rank>
+	<tr class=toprow align=center>
+		<td width=5%>Rank</td>
+		<td width=10%>User</td>
+		<td width=10%>Nick</td>
+		<td width=5%>Solved</td>
+		<td width=5%>Penalty</td>
 <?php
 	for ($i=0;$i<$pid_cnt;$i++) {
-		echo "<td><a href=problem.php?cid=$cid&pid=$i>$PID[$i]</a>";
+		echo "<td><a href=problem.php?cid=$cid&pid=$i>$PID[$i]</a></td>";
 	}
 	echo "</tr>\n";
 	for ($i=0; $i < $user_cnt; $i++) {
