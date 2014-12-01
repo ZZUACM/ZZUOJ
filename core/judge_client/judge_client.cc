@@ -2250,8 +2250,7 @@ int main(int argc, char** argv) {
 	mysql_real_query(conn, sql, strlen(sql));
 	res = mysql_store_result(conn);
 	row = mysql_fetch_row(res);
-	int ischa;
-	sscanf(res[0], "%d", &ischa);
+	int ischa = row[0][0] - '0';
 	if (ischa && sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
 			&& lang < 5) { //bash don't supported
 		sim = get_sim(solution_id, lang, p_id, sim_s_id);
