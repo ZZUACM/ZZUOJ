@@ -37,7 +37,7 @@ for ($i=1;$i<=$cnt;$i++){
         else echo "<a href='problem_list.php?page=".$i."'>".$i."</a>";
 }
 
-$sql="select `problem_id`,`title`,`in_date`,`defunct` FROM `problem` where problem_id>=$pstart and problem_id<=$pend order by `problem_id` desc";
+$sql="select problem.problem_id,`title`,`in_date`,`defunct`, `ischa` FROM `problem`, `cha` where problem.problem_id>=$pstart and problem.problem_id<=$pend  and problem.problem_id = cha.problem_id order by problem.problem_id desc";
 //echo $sql;
 if($keyword) $sql="select `problem_id`,`title`,`in_date`,`defunct` FROM `problem` where title like '%$keyword%' or source like '%$keyword%'";
 $result=mysql_query($sql) or die(mysql_error());
@@ -47,10 +47,10 @@ $result=mysql_query($sql) or die(mysql_error());
 <?php
 echo "<center><table class='table table-striped' width=90% border=1>";
 echo "<form method=post action=contest_add.php>";
-echo "<tr><td colspan=7><input type=submit name='problem2contest' value='CheckToNewContest'>";
+echo "<tr><td colspan=8><input type=submit name='problem2contest' value='CheckToNewContest'>";
 echo "<tr><td>PID<td>Title<td>Date";
 if(isset($_SESSION['administrator'])||isset($_SESSION['problem_editor'])){
-        if(isset($_SESSION['administrator']))   echo "<td>Status<td>Delete";
+        if(isset($_SESSION['administrator']))   echo "<td>是否查重<td>Status<td>Delete";
         echo "<td>Edit<td>TestData</tr>";
 }
 for (;$row=mysql_fetch_object($result);){
@@ -61,8 +61,11 @@ for (;$row=mysql_fetch_object($result);){
         echo "<td>".$row->in_date;
         if(isset($_SESSION['administrator'])||isset($_SESSION['problem_editor'])){
                 if(isset($_SESSION['administrator'])){
-                        echo "<td><a href=problem_df_change.php?id=$row->problem_id&getkey=".$_SESSION['getkey'].">"
-                        .($row->defunct=="N"?"<span titlc='click to reserve it' class=green>Available</span>":"<span class=red title='click to be available'>Reserved</span>")."</a><td>";
+			$ischa = intval($row->ischa);
+                        echo "<td><a href=problem_df_change.php?id=$row->problem_id&type=1&getkey=".$_SESSION['getkey'].">"
+                        .($ischa==1?"<span title='click to change it' class=green>是</span>":"<span class=red title='click to be change it'>否</span>")."</a>";
+                        echo "<td><a href=problem_df_change.php?id=$row->problem_id&type=0&getkey=".$_SESSION['getkey'].">"
+                        .($row->defunct=="N"?"<span title='click to reserve it' class=green>Available</span>":"<span class=red title='click to be available'>Reserved</span>")."</a><td>";
                         if($OJ_SAE||function_exists("system")){
                               ?>
                               <a href=# onclick='javascript:if(confirm("Delete?")) location.href="problem_del.php?id=<?php echo $row->problem_id?>&getkey=<?php echo $_SESSION['getkey']?>";'>
@@ -77,7 +80,7 @@ for (;$row=mysql_fetch_object($result);){
         }
         echo "</tr>";
 }
-echo "<tr><td colspan=7><input type=submit name='problem2contest' value='CheckToNewContest'>";
+echo "<tr><td colspan=8><input type=submit name='problem2contest' value='CheckToNewContest'>";
 echo "</tr></form>";
 echo "</table></center>";
 require("../oj-footer.php");

@@ -1,6 +1,6 @@
 <?php
 
-function addproblem($title, $time_limit, $memory_limit, $description, $input, $output, $sample_input, $sample_output, $hint, $source, $spj,$OJ_DATA) {
+function addproblem($title, $time_limit, $memory_limit, $description, $input, $output, $sample_input, $sample_output, $hint, $source, $spj,$cha, $OJ_DATA) {
 	$title=mysql_real_escape_string($title);
 	$time_limit=mysql_real_escape_string($time_limit);
 	$memory_limit=mysql_real_escape_string($memory_limit);
@@ -38,6 +38,9 @@ function addproblem($title, $time_limit, $memory_limit, $description, $input, $o
 	if(!isset($OJ_SAE)||!$OJ_SAE){
 			echo "[$title]data in $basedir";
 	}
+	$sql = "INSERT into `cha` (`problem_id`,`ischa`) VALUES('$pid', '$cha')";
+	//echo $sql;
+	@mysql_query ( $sql ) or die ( mysql_error () );
 	return $pid;
 }
 function mkdata($pid,$filename,$input,$OJ_DATA){
