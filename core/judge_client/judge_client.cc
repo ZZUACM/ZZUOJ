@@ -2242,7 +2242,17 @@ int main(int argc, char** argv) {
 	}
 	if (ACflg == OJ_AC && PEflg == OJ_PE)
 		ACflg = OJ_PE;
-	if (sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[BUFFER_SIZE];
+	sprintf(sql, "select ischa from solution, cha where cha.problem_id = solution.problem_id"
+		"and solution_id = %d", solution_id);
+	mysql_real_query(conn, sql, strlen(sql));
+	res = mysql_store_result(conn);
+	row = mysql_fetch_row(res);
+	int ischa;
+	sscanf(res[0], "%d", &ischa);
+	if (ischa && sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
 			&& lang < 5) { //bash don't supported
 		sim = get_sim(solution_id, lang, p_id, sim_s_id);
 	} else {
