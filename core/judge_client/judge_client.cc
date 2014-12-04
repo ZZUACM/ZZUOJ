@@ -84,7 +84,7 @@
 
 #endif
 
-static int DEBUG = 0;
+static int DEBUG = 1;
 static char host_name[BUFFER_SIZE];
 static char user_name[BUFFER_SIZE];
 static char password[BUFFER_SIZE];
@@ -1877,7 +1877,9 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 	sprintf(src_pth, "Main.%s", lang_ext[lang]);
 
 	int sim = execute_cmd("/usr/bin/sim.sh %s %d", src_pth, pid);
-	//在子进程中，将AC的代码复制到相应的目录下，准备判重
+	if (DEBUG) {
+		write_log("get_sim : sim = %d", sim);
+	}
 	if (!sim) {
 		execute_cmd("/bin/mkdir ../data/%d/ac/", pid);
 
@@ -1897,7 +1899,6 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 		}
 
 	} else {
-
 		FILE * pf;
 		pf = fopen("sim", "r");
 		if (pf) {
@@ -1906,7 +1907,10 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 			//因为后边还会进行一次插入，可能会产生一个
 			//数据库错误，因为插入了主键相同的元素。
 			while (fscanf(pf, "%d%d", &sim, &sim_s_id) != EOF) {
-				if (sim_s_id > sim_s_id) {
+				if (DEBUG) {
+					write_log("sim : sim = %d : %d", sim, sim_s_id);
+				}
+				if (sim_s_id > solution_id) {
 					update_solution(solution_id, OJ_RI,
 							0, 0, sim, sim_s_id, 0.0);
 				}
@@ -2212,13 +2216,10 @@ int main(int argc, char** argv) {
 		if (pidApp == 0) {
 			run_solution(lang, work_dir, time_lmt, usedtime, mem_lmt);
 		} else {		//父进程等待子进程判题结束,获取结果
-
 			num_of_test++;
-
 			watch_solution(pidApp, infile, ACflg, isspj, userfile, outfile,
 					solution_id, lang, topmemory, mem_lmt, usedtime, time_lmt,
 					p_id, PEflg, work_dir);
-
 			judge_solution(ACflg, usedtime, time_lmt, isspj, p_id, infile,
 					outfile, userfile, PEflg, lang, work_dir, topmemory,
 					mem_lmt, solution_id, num_of_test);
@@ -2245,18 +2246,34 @@ int main(int argc, char** argv) {
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char sql[BUFFER_SIZE];
-	sprintf(sql, "select ischa from solution, cha where cha.problem_id = solution.problem_id"
-		"and solution_id = %d", solution_id);
-	mysql_real_query(conn, sql, strlen(sql));
-	res = mysql_store_result(conn);
-	row = mysql_fetch_row(res);
-	int ischa = row[0][0] - '0';
+	//这里将查询语句写错了，导致不能判题
+	sprintf(sql, "select ischa from solution,cha where cha.problem_id=solution.problem_id "
+		"and solution_id=%d", solution_id);
+	int ischa = 0;
+	int errnum = 0;
+	if ((errnum = mysql_real_query(conn, sql, strlen(sql))) == 0) {
+		res = mysql_store_result(conn);
+		row = mysql_fetch_row(res);
+		if (row != NULL) {
+			ischa = row[0][0] - '0';
+		}
+	} else {
+		write_log("mysql_real_query error = %d", errnum);
+		write_log("mysql_error = %s", mysql_error(conn));
+		write_log("sql = %s", sql);
+	}
+	if (DEBUG) {
+		write_log("ischa = %d", ischa);
+	}
 	if (ischa && sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
 			&& lang < 5) { //bash don't supported
 		sim = get_sim(solution_id, lang, p_id, sim_s_id);
 	} else {
 		sim = 0;
 	}
+	//write_log("solution_id = %d", solution_id);
+	//write_log("sim_s_id = %d", sim_s_id);
+	//write_log("sim = %d\n", sim);
 	//if(ACflg == OJ_RE)addreinfo(solution_id);
 
 	if ((oi_mode && finalACflg == OJ_RE) || ACflg == OJ_RE) {
@@ -2276,6 +2293,7 @@ int main(int argc, char** argv) {
 		update_solution(solution_id, finalACflg, usedtime, topmemory >> 10, sim,
 				sim_s_id, pass_rate);
 	} else {
+		//write_log("ACflg = %d", ACflg);
 		update_solution(solution_id, ACflg, usedtime, topmemory >> 10, sim,
 				sim_s_id, 0);
 	}

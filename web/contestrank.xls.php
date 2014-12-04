@@ -76,7 +76,7 @@ function normalDistribution( $x,  $u,  $s) {
 	}
 
 function  getMark($users,  $start,  $end, $s) {
-	 $accum = 0;
+		$accum = 0;
 		 $p=0;
 		 $ret = 0;
 		 $cn=count($users);
@@ -203,16 +203,14 @@ for ($i=0;$i<$user_cnt;$i++){
 	echo "<td>$rank";
 	$rank++;
 	$uuid=$U[$i]->user_id;
-        
 	$usolved=$U[$i]->solved;
 	echo "<td>$uuid";
-	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE')){
+	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE')) {
 		$U[$i]->nick=iconv("utf8","gbk",$U[$i]->nick);
 	}
 	echo "<td>".$U[$i]->nick."";
 	echo "<td>$usolved";
 	echo "<td>";
-	
 	
 	echo $U[$i]->mark>0?intval($U[$i]->mark):0;
 	for ($j=0;$j<$pid_cnt;$j++){
