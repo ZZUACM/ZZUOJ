@@ -1,8 +1,7 @@
 <?php
-ini_set("display_errors","On");
-		ob_start();
-		header ( "content-type:   application/excel" );
-		
+	//ini_set("display_errors","On");
+	//ob_start();
+	//header ( "content-type:   application/excel" );
 ?>
 <?php require_once("./include/db_info.inc.php");
 global $mark_base,$mark_per_problem,$mark_per_punish;
@@ -20,8 +19,8 @@ class TM{
 	var $p_wa_num;
 	var $p_ac_sec;
 	var $user_id;
-    var $nick;
-    var $mark=0;
+	var $nick;
+	var $mark=0;
 	function TM(){
 		$this->solved=0;
 		$this->time=0;
@@ -29,16 +28,17 @@ class TM{
 		$this->p_ac_sec=array(0);
 	}
 	function Add($pid,$sec,$res,$mark_base,$mark_per_problem,$mark_per_punish){
-//		echo "Add $pid $sec $res<br>";
-	
-		if (isset($this->p_ac_sec[$pid])&&$this->p_ac_sec[$pid]>0)
+		if (isset($this->p_ac_sec[$pid])&&$this->p_ac_sec[$pid]>0) {
 			return;
-		if ($res!=4) 
-			if(isset($this->p_wa_num[$pid]))
+		}
+
+		if ($res!=4) {
+			if(isset($this->p_wa_num[$pid])) {
 				$this->p_wa_num[$pid]++;
-			else
+			} else {
 				$this->p_wa_num[$pid]=1;
-		else{
+			}
+		} else {
 			$this->p_ac_sec[$pid]=$sec;
 			$this->solved++;
 			$this->time+=$sec+$this->p_wa_num[$pid]*1200;
@@ -48,12 +48,14 @@ class TM{
 				$this->mark+=$mark_per_problem;
 			}
 			$punish=intval($this->p_wa_num[$pid]*$mark_per_punish);
-			if($punish<intval($mark_per_problem*.8))
+			if($punish<intval($mark_per_problem*.8)) {
 				$this->mark-=$punish;
-			else
+			} else {
 				$this->mark-=intval($mark_per_problem*.8);
-//			if($this->mark<$mark_base)
+			}
+//			if($this->mark<$mark_base) {
 //				$this->mark=$mark_base;
+//			}
 //			echo "Time:".$this->time."<br>";
 //			echo "Solved:".$this->solved."<br>";
 		}
@@ -67,29 +69,19 @@ function s_cmp($A,$B){
 }
 
 function normalDistribution( $x,  $u,  $s) {
-
-		$ret = 1 / ($s * sqrt(2 *  M_PI))
-				* pow( M_E, -pow($x - $u, 2) / (2 * $s * $s));
-
-		return $ret;
-
-	}
+	$ret = 1 / ($s * sqrt(2 *  M_PI))
+			* pow( M_E, -pow($x - $u, 2) / (2 * $s * $s));
+	return $ret;
+}
 
 function  getMark($users,  $start,  $end, $s) {
 		$accum = 0;
-		 $p=0;
-		 $ret = 0;
-		 $cn=count($users);
-		
-		
+		$p=0;
+		$ret = 0;
+		$cn=count($users);
 		for ( $i = $end; $i > $start; $i--) {
-			
-		    $prob = $cn
-					* normalDistribution($i, ($start + $end) / 2, ($end - $start)
-							/ $s);
+		    $prob = $cn * normalDistribution($i, ($start + $end) / 2, ($end - $start) / $s);
 			$accum += $prob;
-			
-		
 		}
 		
 		$p=$accum/$cn;
@@ -97,9 +89,7 @@ function  getMark($users,  $start,  $end, $s) {
 		$i=0;
 	
 		for ($i = $end; $i > $start; $i--) {
-			$prob = $cn
-					* normalDistribution($i, ($start + $end) / 2, ($end - $start)
-							/ $s);
+			$prob = $cn * normalDistribution($i, ($start + $end) / 2, ($end - $start) / $s);
 			$accum += $prob;
 			while ($accum > $p/2) {
 				if ($ret<$cn) 
@@ -133,7 +123,7 @@ if ($rows_cnt>0){
 	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE')){
 		$title=iconv("utf8","gbk",$title);
 	}
-	header ( "content-disposition:   attachment;   filename=contest".$cid."_".$title.".xls" );
+	//header ( "content-disposition:   attachment;   filename=contest".$cid."_".$title.".xls" );
 }
 mysql_free_result($result);
 if ($start_time==0){
@@ -161,6 +151,35 @@ if($pid_cnt==1) {
 $mark_per_punish=$mark_per_problem/5;
 mysql_free_result($result);
 
+	$sql = "select distinct user_id from sim, solution where sim.sim_s_id = solution.solution_id and sim.sim >= 80";
+	$cheat = array();
+	$cheat_cnt = 0;
+	$res = mysql_query($sql);
+	//or die("Error! ".mysql_error());
+	if ($res) {
+		$cheat_cnt = mysql_num_rows($res);
+		for ($i = 0; $i < $cheat_cnt; ++$i) {
+			$row = mysql_fetch_array($res);
+			$cheat[$row['user_id']] = true;
+			//echo $row['user_id']."<br />";
+			//echo $cheat[$row['user_id']]."<br />";
+		}
+		mysql_free_result($res);
+	}
+	$sql = "select distinct user_id from sim, solution where sim.s_id = solution.solution_id and sim.sim >= 80";
+	$res = mysql_query($sql);
+	//or die("Error! ".mysql_error());
+	if ($res) {
+		$cheat_cnt = mysql_num_rows($res);
+		for ($i = 0; $i < $cheat_cnt; ++$i) {
+			$row = mysql_fetch_array($res);
+			$cheat[$row['user_id']] = true;
+			//echo $row['user_id']."<br />";
+			//echo $cheat[$row['user_id']]."<br />";
+		}
+		mysql_free_result($res);
+	}
+
 $sql="SELECT 
 	users.user_id,users.nick,solution.result,solution.num,solution.in_date 
 		FROM 
@@ -180,7 +199,10 @@ while ($row=mysql_fetch_object($result)){
 		$U[$user_cnt]=new TM();
 		$U[$user_cnt]->user_id=$row->user_id;
                 $U[$user_cnt]->nick=$row->nick;
-
+		if (isset($cheat[$row->user_id]) && $cheat[$row->user_id]) {
+			$U[$user_cnt]->nick= "*".$U[$user_cnt]->nick;
+		}
+		//echo $U[$user_cnt]->nick."---aa<br />";
 		$user_name=$n_user;
 	}
 	$U[$user_cnt]->Add($row->num,strtotime($row->in_date)-$start_time,intval($row->result),$mark_base,$mark_per_problem,$mark_per_punish);
@@ -198,6 +220,9 @@ echo "</tr>";
 getMark($U,$mark_start,$mark_end,$mark_sigma);
 
 for ($i=0;$i<$user_cnt;$i++){
+	if ($U[$i]->nick[0] == '*') {
+		continue;
+	}
 	if ($i&1) echo "<tr class=oddrow align=center>";
 	else echo "<tr class=evenrow align=center>";
 	echo "<td>$rank";

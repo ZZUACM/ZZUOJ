@@ -30,13 +30,13 @@
 			if (isset($this->p_ac_sec[$pid])
 				&& $this->p_ac_sec[$pid] > 0)
 				return;
-			if ($res != 4){
+			if ($res != 4) {
 				if(isset($this->p_wa_num[$pid])){
 					$this->p_wa_num[$pid]++;
 				}else{
 					$this->p_wa_num[$pid] = 1;
 				}
-			}else{
+			} else {
 				$this->p_ac_sec[$pid] = $sec;
 				$this->solved++;
 				if(!isset($this->p_wa_num[$pid]))
@@ -153,6 +153,35 @@
 		mysql_free_result($result);
 	}
 
+	$sql = "select distinct user_id from sim, solution where sim.sim_s_id = solution.solution_id and sim.sim >= 80";
+	$cheat = array();
+	$cheat_cnt = 0;
+	$res = mysql_query($sql);
+	//or die("Error! ".mysql_error());
+	if ($res) {
+		$cheat_cnt = mysql_num_rows($res);
+		for ($i = 0; $i < $cheat_cnt; ++$i) {
+			$row = mysql_fetch_array($res);
+			$cheat[$row['user_id']] = true;
+			//echo $row['user_id']."<br />";
+			//echo $cheat[$row['user_id']]."<br />";
+		}
+		mysql_free_result($res);
+	}
+	$sql = "select distinct user_id from sim, solution where sim.s_id = solution.solution_id and sim.sim >= 80";
+	$res = mysql_query($sql);
+	//or die("Error! ".mysql_error());
+	if ($res) {
+		$cheat_cnt = mysql_num_rows($res);
+		for ($i = 0; $i < $cheat_cnt; ++$i) {
+			$row = mysql_fetch_array($res);
+			//$cheat[$row['user_id']] = true;
+			//echo $row['user_id']."<br />";
+			//echo $cheat[$row['user_id']]."<br />";
+		}
+		mysql_free_result($res);
+	}
+
 	$sql="SELECT
 		users.user_id,users.nick,solution.result,solution.num,solution.in_date
 		FROM
@@ -171,7 +200,6 @@
 			$rows_cnt = 0;
 		}
 	}else{
-
 		$result = mysql_query($sql);
 		//or die("Error! ".mysql_error());
 		if($result) {
@@ -198,7 +226,11 @@
 
 			$U[$user_cnt]->user_id = $row['user_id'];
 			$U[$user_cnt]->nick = $row['nick'];
-
+			if (isset($cheat[$row['user_id']]) && $cheat[$row['user_id']]) {
+				$U[$user_cnt]->nick = "*".$U[$user_cnt]->nick;
+				//echo $row['user_id']."<br />";
+				//echo $U[$user_cnt]->nick."<br />";
+			}
 			$user_name = $n_user;
 		}
 		if(time() < $end_time && $lock < strtotime($row['in_date'])) {
@@ -210,6 +242,7 @@
 				intval($row['result']));
 		}
 	}
+
 	if(!$OJ_MEMCACHE) {
 		mysql_free_result($result);
 	}
@@ -217,7 +250,7 @@
 
 	////firstblood
 	$first_blood = array();
-	for($i = 0; $i < $pid_cnt; $i++){
+	for($i = 0; $i < $pid_cnt; $i++) {
 		$sql = "select user_id from solution where contest_id=$cid and result=4 and num=$i order by in_date limit 1";
 		$result = mysql_query($sql);
 		$row_cnt = mysql_num_rows($result);
@@ -228,7 +261,6 @@
 			$first_blood[$i] = "";
 		}
 	}
-
 
 	/////////////////////////Template
 	require("template/".$OJ_TEMPLATE."/contestrank.php");
