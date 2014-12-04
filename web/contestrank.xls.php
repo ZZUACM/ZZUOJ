@@ -1,7 +1,7 @@
 <?php
-	//ini_set("display_errors","On");
-	//ob_start();
-	//header ( "content-type:   application/excel" );
+	ini_set("display_errors","On");
+	ob_start();
+	header ( "content-type:   application/excel" );
 ?>
 <?php require_once("./include/db_info.inc.php");
 global $mark_base,$mark_per_problem,$mark_per_punish;
@@ -123,7 +123,7 @@ if ($rows_cnt>0){
 	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE')){
 		$title=iconv("utf8","gbk",$title);
 	}
-	//header ( "content-disposition:   attachment;   filename=contest".$cid."_".$title.".xls" );
+	header ( "content-disposition:   attachment;   filename=contest".$cid."_".$title.".xls" );
 }
 mysql_free_result($result);
 if ($start_time==0){

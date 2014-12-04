@@ -175,7 +175,7 @@
 		$cheat_cnt = mysql_num_rows($res);
 		for ($i = 0; $i < $cheat_cnt; ++$i) {
 			$row = mysql_fetch_array($res);
-			//$cheat[$row['user_id']] = true;
+			$cheat[$row['user_id']] = true;
 			//echo $row['user_id']."<br />";
 			//echo $cheat[$row['user_id']]."<br />";
 		}

@@ -18,6 +18,8 @@ if (!(isset($_SESSION['administrator']))){
 			system("rm -rf $basedir");
         $sql="delete FROM `problem` WHERE `problem_id`=$id";
         mysql_query($sql) or die(mysql_error());
+        $sql="delete FROM `sim` WHERE `problem_id`=$id";
+        mysql_query($sql) or die(mysql_error());
         $sql="select max(problem_id) FROM `problem`" ;
         $result=mysql_query($sql);
         $row=mysql_fetch_row($result);
