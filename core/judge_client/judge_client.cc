@@ -1878,9 +1878,9 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 
 	int sim = 0;
 	sim = execute_cmd("/usr/bin/sim.sh %s %d", src_pth, pid);
-	//if (DEBUG) {
+	if (DEBUG) {
 		write_log("get_sim : sim = %d", sim);
-	//}
+	}
 	if (!sim) {
 		execute_cmd("/bin/mkdir ../data/%d/ac/", pid);
 		execute_cmd("/bin/cp %s ../data/%d/ac/%d.%s", src_pth, pid, solution_id,
@@ -1897,20 +1897,20 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 					solution_id, lang_ext[lang], pid, solution_id,
 					lang_ext[lang - 1]);
 		}
-		write_log("!sim");
+		//write_log("!sim");
 	} else {
 		FILE * pf;
 		pf = fopen("sim", "r");
-		write_log("sim");
+		//write_log("sim");
 		if (pf) {
 			//从sim文件中读取相似的运行号
 			//这里将重复的运行号都插入数据库
 			//因为后边还会进行一次插入，可能会产生一个
 			//数据库错误，因为插入了主键相同的元素。
 			while (fscanf(pf, "%d%d", &sim, &sim_s_id) != EOF) {
-				//if (DEBUG) {
+				if (DEBUG) {
 					write_log("sim : sim_s_id = %d : %d", sim, sim_s_id);
-				//}
+				}
 				if (sim_s_id > solution_id) {
 					update_solution(solution_id, OJ_RI,
 							0, 0, sim, sim_s_id, 0.0);
@@ -2265,18 +2265,18 @@ int main(int argc, char** argv) {
 		write_log("mysql_error = %s", mysql_error(conn));
 		write_log("sql = %s", sql);
 	}
-	//if (DEBUG) {
+	if (DEBUG) {
 		write_log("ischa = %d", ischa);
-	//}
+	}
 	if (ischa && sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
 			&& lang < 5) { //bash don't supported
 		sim = get_sim(solution_id, lang, p_id, sim_s_id);
 	} else {
 		sim = 0;
 	}
-	write_log("solution_id = %d", solution_id);
-	write_log("sim_s_id = %d", sim_s_id);
-	write_log("sim = %d", sim);
+	//write_log("solution_id = %d", solution_id);
+	//write_log("sim_s_id = %d", sim_s_id);
+	//write_log("sim = %d", sim);
 	//if(ACflg == OJ_RE)addreinfo(solution_id);
 
 	if ((oi_mode && finalACflg == OJ_RE) || ACflg == OJ_RE) {
@@ -2296,7 +2296,7 @@ int main(int argc, char** argv) {
 		update_solution(solution_id, finalACflg, usedtime, topmemory >> 10, sim,
 				sim_s_id, pass_rate);
 	} else {
-		write_log("ACflg = %d\n", ACflg);
+		//write_log("ACflg = %d\n", ACflg);
 		//前面已经更新过sim了
 		update_solution(solution_id, ACflg, usedtime, topmemory >> 10, 0,
 				0, 0);
