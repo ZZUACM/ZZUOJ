@@ -1,3 +1,4 @@
+<?php @session_start() ?>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -50,7 +51,19 @@
 <?php
 $rank=1;
 ?>
-<center><h3>Contest RankList -- <?php echo $title?></h3><a href="contestrank.xls.php?cid=<?php echo $cid?>" >Download</a></center>
+<center>
+	<h3>Contest RankList -- <?php echo $title?></h3>
+<?php
+	//echo $_SESSION['administrator'];
+	//echo isset($_SESSION['administrator']);
+	if (isset($_SESSION['administrator'])) {
+		echo "<a href='contestrank.xls.php?cid=$cid'/>Download</a>";
+		echo "<a href='contestrank.xls.php?cid=$cid&cha=1'/>Download查重</a>";
+	} else {
+		echo "<a href='contestrank.xls.php?cid=$cid'>Download</a>";
+	}
+?>
+</center>
   <table id=rank><thead><tr class=toprow align=center><td class="{sorter:'false'}" width=5%>Rank<th width=10%>User</th><th width=10%>Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
 <?php
 	for ($i=0;$i<$pid_cnt;$i++) {

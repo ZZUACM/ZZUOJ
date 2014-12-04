@@ -111,6 +111,7 @@ function  getMark($users,  $start,  $end, $s) {
 // contest start time
 if (!isset($_GET['cid'])) die("No Such Contest!");
 $cid=intval($_GET['cid']);
+$cha = intval($_GET['cha']);
 //require_once("contest-header.php");
 $sql="SELECT `start_time`,`title` FROM `contest` WHERE `contest_id`='$cid'";
 $result=mysql_query($sql) or die(mysql_error());
@@ -219,8 +220,9 @@ for ($i=0;$i<$pid_cnt;$i++)
 echo "</tr>";
 getMark($U,$mark_start,$mark_end,$mark_sigma);
 
+	//echo $cha."<br />";
 for ($i=0;$i<$user_cnt;$i++){
-	if ($U[$i]->nick[0] == '*') {
+	if (isset($cha) && $cha && $U[$i]->nick[0] == '*') {
 		continue;
 	}
 	if ($i&1) echo "<tr class=oddrow align=center>";
