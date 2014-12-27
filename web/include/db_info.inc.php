@@ -5,7 +5,7 @@ static 	$DB_NAME="jol";
 static 	$DB_USER="root";
 static 	$DB_PASS="1234";
 	// connect db 
-static 	$OJ_NAME="HUSTOJ";
+static 	$OJ_NAME="ZZUOJ";
 static 	$OJ_HOME="./";
 static 	$OJ_ADMIN="root@localhost";
 static 	$OJ_DATA="/home/judge/data";
