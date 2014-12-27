@@ -3,7 +3,7 @@
 static 	$DB_HOST="localhost";
 static 	$DB_NAME="jol";
 static 	$DB_USER="root";
-static 	$DB_PASS="Guoweqiang.";
+static 	$DB_PASS="1234";
 	// connect db 
 static 	$OJ_NAME="HUSTOJ";
 static 	$OJ_HOME="./";

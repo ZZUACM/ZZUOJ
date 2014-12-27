@@ -41,22 +41,21 @@ HTTP_START="sudo /etc/init.d/httpd restart"
 echo "/usr/bin/judged" > judged
 fi
 
-sudo svn checkout https://github.com/zhblue/hustoj/trunk/trunk hustoj-read-only
-
 #create user and homedir
 sudo  /usr/sbin/useradd -m -u 1536 judge
 
 
 
 #compile and install the core
-cd hustoj-read-only/core/
+cd ../core/
 sudo ./make.sh
-cd ../..
+cd ../install/
 #install web and db
 sudo cp -R hustoj-read-only/web $WEBBASE/JudgeOnline
 sudo chmod -R 771 $WEBBASE/JudgeOnline
 sudo chown -R $APACHEUSER $WEBBASE/JudgeOnline
 sudo mysql -h localhost -u$DBUSER -p$DBPASS < db.sql
+sudo mysql -h localhost -u$DBUSER -p$DBPASS < create_cha.sql
 
 #create work dir set default conf
 sudo    mkdir /home/judge
