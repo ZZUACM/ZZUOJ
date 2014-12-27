@@ -1,7 +1,7 @@
 #!/bin/bash
 #before install check DB setting in 
 #	judge.conf 
-#	hustoj-read-only/web/include/db_info.inc.php
+#	../web/include/db_info.inc.php
 #	and down here
 #and run this with root
 
@@ -51,7 +51,7 @@ cd ../core/
 sudo ./make.sh
 cd ../install/
 #install web and db
-sudo cp -R hustoj-read-only/web $WEBBASE/JudgeOnline
+sudo cp -R ../web $WEBBASE/JudgeOnline
 sudo chmod -R 771 $WEBBASE/JudgeOnline
 sudo chown -R $APACHEUSER $WEBBASE/JudgeOnline
 sudo mysql -h localhost -u$DBUSER -p$DBPASS < db.sql
@@ -79,7 +79,7 @@ sed $SED_CMD judge.conf|sed $SED_CMD2 >/home/judge/etc/judge.conf
 SED_CMD="s/DB_USER=\\\"root\\\"/DB_USER=\\\"$DBUSER\\\"/g"
 SED_CMD2="s/DB_PASS=\\\"root\\\"/DB_PASS=\\\"$DBPASS\\\"/g"
 
-sed $SED_CMD hustoj-read-only/web/include/db_info.inc.php|sed $SED_CMD2 >$WEBBASE/JudgeOnline/include/db_info.inc.php
+sed $SED_CMD ../web/include/db_info.inc.php|sed $SED_CMD2 >$WEBBASE/JudgeOnline/include/db_info.inc.php
 
 
 #boot up judged
