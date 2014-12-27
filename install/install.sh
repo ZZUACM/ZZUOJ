@@ -9,10 +9,10 @@
 WEBBASE=/var/www/html
 APACHEUSER=www-data
 DBUSER=root
-DBPASS=root
+DBPASS=1234
 
 #try install tools
-sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server php5-mysql php5-gd php5-cli mono-gmcs subversion
+sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server-5.6 php5-mysql php5-gd php5-cli mono-gmcs subversion
 sudo /etc/init.d/mysql start
 
 sudo yum -y update

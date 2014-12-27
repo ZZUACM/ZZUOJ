@@ -9,7 +9,7 @@
 WEBBASE=/var/www/html
 APACHEUSER=www-data
 DBUSER=root
-DBPASS=root
+DBPASS=1234
 
 printf "Input Database(MySQL) Username:"
 read tmp
@@ -27,7 +27,7 @@ fi
 #try install tools
 if uname -a|grep 'Ubuntu\|Debian'
 then 
-sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server php5-mysql php5-gd php5-cli mono-gmcs subversion
+sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server-5.6 php5-mysql php5-gd php5-cli mono-gmcs subversion
 sudo /etc/init.d/mysql start
 HTTP_START="sudo /etc/init.d/apache2 restart"
 
