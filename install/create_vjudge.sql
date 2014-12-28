@@ -1,10 +1,9 @@
 set names utf8;
 use jol;
 
-CREATE TABLE  `cha` (
+CREATE TABLE  `vjudge` (
   `problem_id` int(11) NOT NULL DEFAULT '0',
-  `ischa` bool NOT NULL DEFAULT FALSE,
+  `origin_id` int(11) NOT NULL DEFAULT '0',
+  `ojtype` int(11) NOT NULL,
   PRIMARY KEY (`problem_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-insert into cha(problem_id) select problem_id from problem;
