@@ -83,6 +83,7 @@ $output->Create() ;
 ?>
 </p>
 <p>SpecialJudge: N<input type=radio name=spj value='0' checked>Y<input type=radio name=spj value='1'></p>
+<p>是否判重: N<input type=radio name=cha value='0' checked>Y<input type=radio name=cha value='1'></p>
 <p align=left>Source:<br><textarea name=source rows=1 cols=70></textarea></p>
 <p align=left>contest:
 	<select  name=contest_id>

@@ -1,3 +1,4 @@
+<?php @session_start() ?>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,111 +8,121 @@
    <script type="text/javascript" src="include/jquery-latest.js"></script> 
 <script type="text/javascript" src="include/jquery.tablesorter.js"></script> 
 <script type="text/javascript">
-$(document).ready(function() 
-    { 
+	$(document).ready(function() { 
+		$.tablesorter.addParser({ 
+			// set a unique id 
+			id: 'punish', 
+			is: function(s) { 
+			// return false so this parser is not auto detected 
+			return false; 
+			}, 
+			format: function(s) {
+				// format your data for normalization 
+				var v=s.toLowerCase().replace(/\:/,'').replace(/\:/,'').replace(/\(-/,'.').replace(/\)/,''); 
+				//alert(v);
+				v=parseFloat('0'+v);
+				return v>1?v:v+Number.MAX_VALUE-1;
+			}, 
+			// set type, either numeric or text 
+			type: 'numeric' 
+		}); 
 
- $.tablesorter.addParser({ 
-        // set a unique id 
-        id: 'punish', 
-        is: function(s) { 
-            // return false so this parser is not auto detected 
-            return false; 
-        }, 
-        format: function(s) { 
-            // format your data for normalization 
-	    var v=s.toLowerCase().replace(/\:/,'').replace(/\:/,'').replace(/\(-/,'.').replace(/\)/,''); 
-	    //alert(v);
-	    v=parseFloat('0'+v);
-	    return v>1?v:v+Number.MAX_VALUE-1;
-        }, 
-        // set type, either numeric or text 
-        type: 'numeric' 
-    }); 
+		$("#rank").tablesorter({ 
+			headers: { 
+				4: { 
+				sorter:'punish' 
+			}
 
-        $("#rank").tablesorter({ 
-            headers: { 
-                4: { 
-                    sorter:'punish' 
-                }
-		
-<?php
-for ($i=0;$i<$pid_cnt;$i++){
-                echo ",".($i+5).": { ";
-                echo "    sorter:'punish' ";
-                echo "}";
-}
-?>
-            } 
-        }); 
-    } 
-); 
+			<?php
+				for ($i=0;$i<$pid_cnt;$i++){
+				echo ",".($i+5).": { ";
+				echo "    sorter:'punish' ";
+				echo "}";
+				}
+			?>
+			} 
+		}); 
+	}); 
 </script>
 </head>
 <body>
 <div id="wrapper">
-<div id=main>
-	<?php require_once("contest-header.php");?>
+<div id=main> <?php require_once("contest-header.php");?>
 <?php
 $rank=1;
 ?>
-<center><h3>Contest RankList -- <?php echo $title?></h3><a href="contestrank.xls.php?cid=<?php echo $cid?>" >Download</a></center>
+<center>
+	<h3>Contest RankList -- <?php echo $title?></h3>
+<?php
+	//echo $_SESSION['administrator'];
+	//echo isset($_SESSION['administrator']);
+	if (isset($_SESSION['administrator'])) {
+		echo "<a href='contestrank.xls.php?cid=$cid'/>Download</a>";
+		echo "<a href='contestrank.xls.php?cid=$cid&cha=1'/>Download查重</a>";
+	} else {
+		echo "<a href='contestrank.xls.php?cid=$cid'>Download</a>";
+	}
+?>
+</center>
   <table id=rank><thead><tr class=toprow align=center><td class="{sorter:'false'}" width=5%>Rank<th width=10%>User</th><th width=10%>Nick</th><th width=5%>Solved</th><th width=5%>Penalty</th>
 <?php
-for ($i=0;$i<$pid_cnt;$i++)
-  echo "<td><a href=problem.php?cid=$cid&pid=$i>$PID[$i]</a></td>";
-     echo "</tr></thead>\n<tbody>";
-for ($i=0;$i<$user_cnt;$i++){
-	if ($i&1) echo "<tr class=oddrow align=center>\n";
-	else echo "<tr class=evenrow align=center>\n";
-	echo "<td>";
-	$uuid=$U[$i]->user_id;
-  $nick=$U[$i]->nick;
-  if($nick[0]!="*")
-        echo $rank++;
-  else 
-        echo "*";
-      
-	$usolved=$U[$i]->solved;
-  if($uuid==$_GET['user_id']) echo "<td bgcolor=#ffff77>";
-  else echo"<td>";
-	echo "<a name=\"$uuid\" href=userinfo.php?user=$uuid>$uuid</a>";
-	echo "<td><a href=userinfo.php?user=$uuid>".$U[$i]->nick."</a>";
-	echo "<td><a href=status.php?user_id=$uuid&cid=$cid>$usolved</a>";
-	echo "<td>".sec2str($U[$i]->time);
-	for ($j=0;$j<$pid_cnt;$j++){
-		$bg_color="eeeeee";
-		 if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0){
-                	$aa=0x33+$U[$i]->p_wa_num[$j]*32;
+	for ($i=0;$i<$pid_cnt;$i++) {
+		echo "<td><a href=problem.php?cid=$cid&pid=$i>$PID[$i]</a></td>";
+	}
+	echo "</tr></thead>\n<tbody>";
+	for ($i=0;$i<$user_cnt;$i++) {
+		if ($i & 1) {
+			echo "<tr class=oddrow align=center>\n";
+		} else {
+			echo "<tr class=evenrow align=center>\n";
+		}
+		echo "<td>";
+		$uuid=$U[$i]->user_id;
+		$nick=$U[$i]->nick;
+		if($nick[0] != "*") {
+			echo $rank++;
+		} else {
+			echo "*";
+		}
+		$usolved=$U[$i]->solved;
+		if($uuid==$_GET['user_id']) {
+			echo "<td bgcolor=#ffff77>";
+		} else {
+			echo"<td>";
+		}
+		echo "<a name=\"$uuid\" href=userinfo.php?user=$uuid>$uuid</a>";
+		echo "<td><a href=userinfo.php?user=$uuid>".$U[$i]->nick."</a>";
+		echo "<td><a href=status.php?user_id=$uuid&cid=$cid>$usolved</a>";
+		echo "<td>".sec2str($U[$i]->time);
+		for ($j=0;$j<$pid_cnt;$j++){
+			$bg_color="eeeeee";
+			if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0) {
+				$aa=0x33+$U[$i]->p_wa_num[$j]*32;
                         $aa=$aa>0xaa?0xaa:$aa;
                 	$aa=dechex($aa);
 			$bg_color="$aa"."ff"."$aa";
-                
-                
-                  //$bg_color="aaffaa";
-                        if($uuid==$first_blood[$j]){
+			//$bg_color="aaffaa";
+                        if($uuid==$first_blood[$j]) {
                                 $bg_color="aaaaff";
                         }
-			
-                        
-                        
-		}else if(isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) {
-                        $aa=0xaa-$U[$i]->p_wa_num[$j]*10;
-                        $aa=$aa>16?$aa:16;
-                	$aa=dechex($aa);
-			$bg_color="ff$aa$aa";
+			} else if(isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) {
+				$aa=0xaa-$U[$i]->p_wa_num[$j]*10;
+				$aa=$aa>16?$aa:16;
+				$aa=dechex($aa);
+				$bg_color="ff$aa$aa";
+			}
+			echo "<td class=well style='padding:1px;background-color:$bg_color'>";
+			if(isset($U[$i])) {
+				if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0) {
+					echo sec2str($U[$i]->p_ac_sec[$j]);
+				}
+				if (isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) {
+					echo "(-".$U[$i]->p_wa_num[$j].")";
+				}
+			}
 		}
-		
-		
-		 echo "<td class=well style='padding:1px;background-color:$bg_color'>";
-		if(isset($U[$i])){
-			if (isset($U[$i]->p_ac_sec[$j])&&$U[$i]->p_ac_sec[$j]>0)
-				echo sec2str($U[$i]->p_ac_sec[$j]);
-			if (isset($U[$i]->p_wa_num[$j])&&$U[$i]->p_wa_num[$j]>0) 
-				echo "(-".$U[$i]->p_wa_num[$j].")";
-		}
+		echo "</tr>\n";
 	}
-	echo "</tr>\n";
-}
      echo "</tbody></table>";
 ?>
 
@@ -127,8 +138,7 @@ for ($i=0;$i<$user_cnt;$i++){
       }
     }
     return total;
-  
-  }
+}
 function metal(){
   var tb=window.document.getElementById('rank');
   var rows=tb.rows;
@@ -165,8 +175,6 @@ function metal(){
   }
 }
 metal();
-
-
 </script>
 
 <div id=foot>

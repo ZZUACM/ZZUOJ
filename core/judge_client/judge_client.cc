@@ -84,7 +84,7 @@
 
 #endif
 
-static int DEBUG = 0;
+static int DEBUG = 1;
 static char host_name[BUFFER_SIZE];
 static char user_name[BUFFER_SIZE];
 static char password[BUFFER_SIZE];
@@ -1876,11 +1876,13 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 	//char cmd[BUFFER_SIZE];
 	sprintf(src_pth, "Main.%s", lang_ext[lang]);
 
-	int sim = execute_cmd("/usr/bin/sim.sh %s %d", src_pth, pid);
-	//在子进程中，将AC的代码复制到相应的目录下，准备判重
+	int sim = 0;
+	sim = execute_cmd("/usr/bin/sim.sh %s %d", src_pth, pid);
+	if (DEBUG) {
+		write_log("get_sim : sim = %d", sim);
+	}
 	if (!sim) {
 		execute_cmd("/bin/mkdir ../data/%d/ac/", pid);
-
 		execute_cmd("/bin/cp %s ../data/%d/ac/%d.%s", src_pth, pid, solution_id,
 				lang_ext[lang]);
 		//c cpp will
@@ -1895,29 +1897,34 @@ int get_sim(int solution_id, int lang, int pid, int &sim_s_id) {
 					solution_id, lang_ext[lang], pid, solution_id,
 					lang_ext[lang - 1]);
 		}
-
+		//write_log("!sim");
 	} else {
-
 		FILE * pf;
 		pf = fopen("sim", "r");
+		//write_log("sim");
 		if (pf) {
 			//从sim文件中读取相似的运行号
 			//这里将重复的运行号都插入数据库
 			//因为后边还会进行一次插入，可能会产生一个
 			//数据库错误，因为插入了主键相同的元素。
 			while (fscanf(pf, "%d%d", &sim, &sim_s_id) != EOF) {
-				if (sim_s_id > sim_s_id) {
+				if (DEBUG) {
+					write_log("sim : sim_s_id = %d : %d", sim, sim_s_id);
+				}
+				if (sim_s_id > solution_id) {
 					update_solution(solution_id, OJ_RI,
 							0, 0, sim, sim_s_id, 0.0);
 				}
 			}
 			fclose(pf);
+		} else {
+			write_log("open file sim error");
 		}
 
 	}
 	if (solution_id <= sim_s_id)
 		sim = 0;
-	return sim;
+	return 0;
 }
 void mk_shm_workdir(char * work_dir) {
 	char shm_path[BUFFER_SIZE];
@@ -2212,13 +2219,10 @@ int main(int argc, char** argv) {
 		if (pidApp == 0) {
 			run_solution(lang, work_dir, time_lmt, usedtime, mem_lmt);
 		} else {		//父进程等待子进程判题结束,获取结果
-
 			num_of_test++;
-
 			watch_solution(pidApp, infile, ACflg, isspj, userfile, outfile,
 					solution_id, lang, topmemory, mem_lmt, usedtime, time_lmt,
 					p_id, PEflg, work_dir);
-
 			judge_solution(ACflg, usedtime, time_lmt, isspj, p_id, infile,
 					outfile, userfile, PEflg, lang, work_dir, topmemory,
 					mem_lmt, solution_id, num_of_test);
@@ -2242,12 +2246,37 @@ int main(int argc, char** argv) {
 	}
 	if (ACflg == OJ_AC && PEflg == OJ_PE)
 		ACflg = OJ_PE;
-	if (sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[BUFFER_SIZE];
+	//这里将查询语句写错了，导致不能判题
+	sprintf(sql, "select ischa from solution,cha where cha.problem_id=solution.problem_id "
+		"and solution_id=%d", solution_id);
+	int ischa = 0;
+	int errnum = 0;
+	if ((errnum = mysql_real_query(conn, sql, strlen(sql))) == 0) {
+		res = mysql_store_result(conn);
+		row = mysql_fetch_row(res);
+		if (row != NULL) {
+			ischa = row[0][0] - '0';
+		}
+	} else {
+		write_log("mysql_real_query error = %d", errnum);
+		write_log("mysql_error = %s", mysql_error(conn));
+		write_log("sql = %s", sql);
+	}
+	if (DEBUG) {
+		write_log("ischa = %d", ischa);
+	}
+	if (ischa && sim_enable && ACflg == OJ_AC && (!oi_mode || finalACflg == OJ_AC)
 			&& lang < 5) { //bash don't supported
 		sim = get_sim(solution_id, lang, p_id, sim_s_id);
 	} else {
 		sim = 0;
 	}
+	//write_log("solution_id = %d", solution_id);
+	//write_log("sim_s_id = %d", sim_s_id);
+	//write_log("sim = %d", sim);
 	//if(ACflg == OJ_RE)addreinfo(solution_id);
 
 	if ((oi_mode && finalACflg == OJ_RE) || ACflg == OJ_RE) {
@@ -2267,8 +2296,10 @@ int main(int argc, char** argv) {
 		update_solution(solution_id, finalACflg, usedtime, topmemory >> 10, sim,
 				sim_s_id, pass_rate);
 	} else {
-		update_solution(solution_id, ACflg, usedtime, topmemory >> 10, sim,
-				sim_s_id, 0);
+		//write_log("ACflg = %d\n", ACflg);
+		//前面已经更新过sim了
+		update_solution(solution_id, ACflg, usedtime, topmemory >> 10, 0,
+				0, 0);
 	}
 	if ((oi_mode && finalACflg == OJ_WA) || ACflg == OJ_WA) {
 		if (DEBUG)

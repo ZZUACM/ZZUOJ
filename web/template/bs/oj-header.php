@@ -25,9 +25,10 @@
 		<a class='btn <?php if ($url=="contest.php") echo "  $ACTIVE";?>'  href="contest.php">
 		<i class="icon-fire"></i><?php echo checkcontest($MSG_CONTEST)?></a>
 
-		<!-- 添加一个导航栏 -->
-		<a class='btn <?php if ($url=="contest.php") echo "  $ACTIVE";?>'  href="contest.php">
-		<i class="icon-fire"></i><?php echo checkcontest($MSG_CONTEST)?></a>
+		<!-- 添加一个导航栏
+		<a class='btn <?php //if ($url=="contest.php") echo "  $ACTIVE";?>'  href="contest.php">
+		<i class="icon-fire"></i><?php //echo checkcontest($MSG_CONTEST)?></a>
+		-->
 		
 		<a class='btn <?php if ($url=="recent-contest.php") echo " $ACTIVE";?>' href="recent-contest.php">
 		<i class="icon-share"></i><?php echo "$MSG_RECENT_CONTEST"?></a>

@@ -1,7 +1,7 @@
 #!/bin/bash
 #before install check DB setting in 
 #	judge.conf 
-#	hustoj-read-only/web/include/db_info.inc.php
+#	../web/include/db_info.inc.php
 #	and down here
 #and run this with root
 
@@ -9,17 +9,15 @@
 WEBBASE=/var/www/html
 APACHEUSER=www-data
 DBUSER=root
-DBPASS=root
+DBPASS=1234
 
 #try install tools
-sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server php5-mysql php5-gd php5-cli mono-gmcs subversion
+sudo apt-get install make flex g++ clang libmysql++-dev php5 apache2 mysql-server-5.6 php5-mysql php5-gd php5-cli mono-gmcs subversion
 sudo /etc/init.d/mysql start
 
 sudo yum -y update
 sudo yum -y install php httpd php-mysql mysql-server php-xml php-gd gcc-c++  mysql-devel php-mbstring glibc-static flex
 sudo /etc/init.d/mysqld start
-
-sudo svn checkout https://github.com/zhblue/hustoj/trunk/trunk hustoj-read-only
 
 #create user and homedir
 sudo  /usr/sbin/useradd -m -u 1536 judge
@@ -27,14 +25,15 @@ sudo  /usr/sbin/useradd -m -u 1536 judge
 
 
 #compile and install the core
-cd hustoj-read-only/core/
+cd ../core/
 sudo ./make.sh
-cd ../..
+cd ../install/
 #install web and db
-sudo cp -R hustoj-read-only/web $WEBBASE/JudgeOnline
+sudo cp -R ../web $WEBBASE/JudgeOnline
 sudo chmod -R 771 $WEBBASE/JudgeOnline
 sudo chown -R $APACHEUSER $WEBBASE/JudgeOnline
 sudo mysql -h localhost -u$DBUSER -p$DBPASS < db.sql
+sudo mysql -h localhost -u$DBUSER -p$DBPASS < create_cha.sql
 
 #create work dir set default conf
 sudo    mkdir /home/judge

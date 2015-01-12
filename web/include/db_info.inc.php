@@ -3,9 +3,9 @@
 static 	$DB_HOST="localhost";
 static 	$DB_NAME="jol";
 static 	$DB_USER="root";
-static 	$DB_PASS="Guoweqiang.";
+static 	$DB_PASS="1234";
 	// connect db 
-static 	$OJ_NAME="HUSTOJ";
+static 	$OJ_NAME="ZZUOJ";
 static 	$OJ_HOME="./";
 static 	$OJ_ADMIN="root@localhost";
 static 	$OJ_DATA="/home/judge/data";
@@ -27,7 +27,7 @@ static  $OJ_MEMPORT=11211;
 static  $SAE_STORAGE_ROOT="http://hustoj-web.stor.sinaapp.com/";
 static  $OJ_TEMPLATE="bs";
 static  $OJ_LOGIN_MOD="hustoj";
-static  $OJ_RANK_LOCK_PERCENT=0;
+static  $OJ_RANK_LOCK_PERCENT=0;		//封榜时间比例
 static  $OJ_SHOW_DIFF=false;
 static  $OJ_TEST_RUN=true;
 static $OJ_OPENID_PWD = '8a367fe87b1e406ea8e94d7d508dcf01';

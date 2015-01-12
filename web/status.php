@@ -29,7 +29,7 @@ if (isset($_GET['cid'])){
         $cid=intval($_GET['cid']);
         $sql=$sql." AND `contest_id`='$cid' and num>=0 ";
         $str2=$str2."&cid=$cid";
-          $sql_lock="SELECT `start_time`,`title`,`end_time` FROM `contest` WHERE `contest_id`='$cid'";
+	$sql_lock="SELECT `start_time`,`title`,`end_time` FROM `contest` WHERE `contest_id`='$cid'";
         $result=mysql_query($sql_lock) or die(mysql_error());
         $rows_cnt=mysql_num_rows($result);
         $start_time=0;
@@ -41,7 +41,7 @@ if (isset($_GET['cid'])){
                 $end_time=strtotime($row[2]);       
         }
         $lock_time=$end_time-($end_time-$start_time)*$OJ_RANK_LOCK_PERCENT;
-  //$lock_time=date("Y-m-d H:i:s",$lock_time);
+	//$lock_time=date("Y-m-d H:i:s",$lock_time);
         $time_sql="";
         //echo $lock.'-'.date("Y-m-d H:i:s",$lock);
         if(time()>$lock_time&&time()<$end_time){
