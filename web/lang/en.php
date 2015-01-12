@@ -30,6 +30,7 @@
 	$MSG_Runtime_Error="Runtime Error";
 $MSG_TEST_RUN="Test Running Done";
 	$MSG_Compile_Error="Compile Error";
+	$MSG_JUDGE_ERROR="Judge Error";
    
   $MSG_Runtime_Click="Runtime Error(Click)";
 	$MSG_Compile_Click="Compile Error(Click)";

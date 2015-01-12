@@ -31,6 +31,7 @@
 	$MSG_Runtime_Click="运行错误(点击看详细)";
 	$MSG_Compile_Click="编译错误(点击看详细)";
 	$MSG_Compile_OK="编译成功";
+	$MSG_JUDGE_ERROR="系统错误";
   $MSG_Click_Detail="点击看详细";
    $MSG_Manual="人工判题";
    $MSG_OK="确定";

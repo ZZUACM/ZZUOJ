@@ -19,6 +19,7 @@
 	$MSG_MAIL="จดหมายลับ";
 	//status.php
 	$MSG_Pending="รอตรวจ";
+	$MSG_JUDGE_ERROR="Judge Error";
 	$MSG_Pending_Rejudging="รอตรวจใหม่";
 	$MSG_Compiling="กำลังแปลภาษา";
 	$MSG_Running_Judging="กำลังทดสอบโปรแกรม";

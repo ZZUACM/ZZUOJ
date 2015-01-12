@@ -22,7 +22,7 @@ $MSG_RECENT_CONTEST="Recent";
 	$MSG_LOGIN="ورود";
 
 	$MSG_REGISTER="عضویت";
-
+	$MSG_JUDGE_ERROR="Judge Error";
 	$MSG_ADMIN="ادمین";
 
 	$MSG_STANDING="جایگاه ها";
