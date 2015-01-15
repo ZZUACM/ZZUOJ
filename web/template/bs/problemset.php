@@ -24,6 +24,9 @@ $(document).ready(function()
 		if ($i>1) echo '&nbsp;';
 		if ($i==$page) echo "<span class=red>$i</span>";
 		else echo "<a href='problemset.php?page=".$i."'>".$i."</a>";
+		if ($i % 50 == 0) {
+			echo "<br>";
+		}
 	}
         ?>
 
