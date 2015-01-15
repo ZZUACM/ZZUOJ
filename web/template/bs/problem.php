@@ -26,6 +26,40 @@
 	
 	<?php
 	
+	function get_oj_name($row) 
+	{
+		$oj_name=Array("hdu","poj","codeforces","zoj");
+		return $oj_name[$row->ojtype];
+	}
+
+	function get_problem_id($row) 
+	{
+		$ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		if ($row->ojtype != 2) {
+			return "".$row->origin_id;
+		} else {		// codeforces
+			$ret = (int)($row->origin_id / 10);
+			$ret = "".$ret.$ch[$row->origin_id % 10];
+			return $ret;
+		}
+	}
+
+	function get_problem_url($row) 
+	{
+		$oj_url=Array(
+			"http://acm.hdu.edu.cn/showproblem.php?pid=",
+			"http://poj.org/problem?id=",
+			"http://codeforces.com/problemset/problem/",
+			"http://acm.zju.edu.cn/onlinejudge/showProblem.do?problemCode="
+			);
+		$ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		if ($row->ojtype != 2) {
+			return $oj_url[$row->ojtype].get_problem_id($row);
+		} else {		// codeforces
+			return $oj_url[$row->ojtype].(int)($row->origin_id / 10)."/".$ch[($row->origin_id % 10)];
+		}
+	}
+
 	if ($pr_flag){
 		echo "<title>$MSG_PROBLEM $row->problem_id. -- $row->title</title>";
 		echo "<center><h2>$id: $row->title</h2>";
@@ -39,6 +73,13 @@
 	if ($row->spj) echo "&nbsp;&nbsp;<span class=red>Special Judge</span>";
 	echo "<br><span class=green>$MSG_SUBMIT: </span>".$row->submit."&nbsp;&nbsp;";
 	echo "<span class=green>$MSG_SOVLED: </span>".$row->accepted."<br>"; 
+	if ($pr_flag && $vjudge_row != null) {
+		echo "&nbsp;&nbsp;<span class=red>This problem will be judged on ".get_oj_name($vjudge_row)
+			.".&nbsp;&nbsp;origin id: <a href='".get_problem_url($vjudge_row)."'>"
+			.get_problem_id($vjudge_row)."<a/></span>";
+		echo "<br>";
+	}
+
 	
 	if ($pr_flag){
 		echo "[<a href='submitpage.php?id=$id'>$MSG_SUBMIT</a>]";

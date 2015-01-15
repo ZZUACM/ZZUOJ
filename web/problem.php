@@ -3,6 +3,8 @@ $cache_time=30;
 $OJ_CACHE_SHARE=false;
         require_once('./include/cache_start.php');
     require_once('./include/db_info.inc.php');
+    require_once('./include/const.inc.php');
+    require_once('./include/my_func.inc.php');
         require_once('./include/setlang.php');
         $now=strftime("%Y-%m-%d %H:%M",time());
 if (isset($_GET['cid'])) $ucid="&cid=".intval($_GET['cid']);
@@ -26,6 +28,7 @@ if (isset($_GET['id'])){
                                 ";
         else
                 $sql="SELECT * FROM `problem` WHERE `problem_id`=$id";
+	$vjudge_sql="SELECT * FROM `vjudge` WHERE `problem_id`=$id";
 
         $pr_flag=true;
 }else if (isset($_GET['cid']) && isset($_GET['pid'])){
@@ -75,6 +78,9 @@ if (isset($_GET['id'])){
         exit(0);
 }
 $result=mysql_query($sql) or die(mysql_error());
+if ($pr_flag == true) {
+	$vjudge_result=mysql_query($vjudge_sql) or die(mysql_error());
+}
 
        
 if (mysql_num_rows($result)!=1){
@@ -106,12 +112,12 @@ if (mysql_num_rows($result)!=1){
         exit(0);
 }else{
         $row=mysql_fetch_object($result);
+        $vjudge_row=mysql_fetch_object($vjudge_result);
        
         $view_title= $row->title;
        
 }
 mysql_free_result($result);
-
 
 /////////////////////////Template
 require("template/".$OJ_TEMPLATE."/problem.php");
