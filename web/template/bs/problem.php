@@ -2,6 +2,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title><?php echo $view_title?></title>
+	<script type="text/javascript" src="http://acm.hdu.edu.cn/js/MathJax/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 	<link rel=stylesheet href='./template/<?php echo $OJ_TEMPLATE?>/<?php echo isset($OJ_CSS)?$OJ_CSS:"hoj.css" ?>' type='text/css'>
      <link rel="next" href="submitpage.php?<?php
         
