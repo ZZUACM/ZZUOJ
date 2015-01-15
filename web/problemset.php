@@ -4,6 +4,7 @@
 	require_once('./include/db_info.inc.php');
 	require_once('./include/cache_start.php');
 	require_once('./include/setlang.php');
+	require_once('./include/my_func.inc.php');
     $view_title= "Problem Set";
 $first=1000;
   //if($OJ_SAE) $first=1;

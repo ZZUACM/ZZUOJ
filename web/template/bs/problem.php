@@ -26,40 +26,6 @@
 	
 	<?php
 	
-	function get_oj_name($row) 
-	{
-		$oj_name=Array("hdu","poj","codeforces","zoj");
-		return $oj_name[$row->ojtype];
-	}
-
-	function get_problem_id($row) 
-	{
-		$ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		if ($row->ojtype != 2) {
-			return "".$row->origin_id;
-		} else {		// codeforces
-			$ret = (int)($row->origin_id / 10);
-			$ret = "".$ret.$ch[$row->origin_id % 10];
-			return $ret;
-		}
-	}
-
-	function get_problem_url($row) 
-	{
-		$oj_url=Array(
-			"http://acm.hdu.edu.cn/showproblem.php?pid=",
-			"http://poj.org/problem?id=",
-			"http://codeforces.com/problemset/problem/",
-			"http://acm.zju.edu.cn/onlinejudge/showProblem.do?problemCode="
-			);
-		$ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		if ($row->ojtype != 2) {
-			return $oj_url[$row->ojtype].get_problem_id($row);
-		} else {		// codeforces
-			return $oj_url[$row->ojtype].(int)($row->origin_id / 10)."/".$ch[($row->origin_id % 10)];
-		}
-	}
-
 	if ($pr_flag){
 		echo "<title>$MSG_PROBLEM $row->problem_id. -- $row->title</title>";
 		echo "<center><h2>$id: $row->title</h2>";
