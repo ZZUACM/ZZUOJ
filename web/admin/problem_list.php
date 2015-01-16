@@ -35,6 +35,9 @@ for ($i=1;$i<=$cnt;$i++){
         if ($i>1) echo '&nbsp;';
         if ($i==$page) echo "<span class=red>$i</span>";
         else echo "<a href='problem_list.php?page=".$i."'>".$i."</a>";
+	if ($i % 30 == 0) {
+		echo "<br>";
+	}
 }
 
 $sql="select problem.problem_id,`title`,`in_date`,`defunct`, `ischa` FROM `problem`, `cha` where problem.problem_id>=$pstart and problem.problem_id<=$pend  and problem.problem_id = cha.problem_id order by problem.problem_id desc";
